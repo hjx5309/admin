@@ -33,7 +33,10 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-pagination background layout="prev, pager, next" :current-page="currentPage" :page-count="totalPage" @current-change="handleCurrentChange">
+    </el-pagination>
   </div>
+
 </template>
 
 <script>
@@ -43,17 +46,15 @@ export default {
   data() {
     return {
       list: null,
-      listLoading: true
-    }
-  },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
+      listLoading: true,
+      listQuery: {
+        curPage: 1,
+        pageSize: 10,
+        organType: `SYS_ORGAN_TYPE_SUPERVISE`,
+        keyword: ``
+      },
+      total: 0,
+      totalPage: 0
     }
   },
   created() {
@@ -63,9 +64,15 @@ export default {
     fetchData() {
       this.listLoading = true
       getList(this.listQuery).then(response => {
-        this.list = response.data.items
+        this.list = response.data.list
+        this.total = response.data.totalRecord
+        this.totalPage = response.data.totalPage
         this.listLoading = false
       })
+    },
+    handleCurrentChange(val) {
+      this.listQuery.curPage = val
+      this.fetchData()
     }
   }
 }

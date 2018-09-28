@@ -1,12 +1,13 @@
 import request from '@/utils/request'
 
-export function login(username, password) {
+export function login(account, password) {
   return request({
-    url: '/user/login',
+    url: '/passport/account/login',
     method: 'post',
     data: {
-      username,
-      password
+      account,
+      password,
+      device: 'PC'
     }
   })
 }
@@ -21,7 +22,10 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/user/logout',
-    method: 'post'
+    url: '/passport/logout',
+    method: 'post',
+    data: {
+      device: 'PC'
+    }
   })
 }

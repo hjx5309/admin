@@ -11,13 +11,15 @@ router.beforeEach((to, from, next) => {
   if (getToken()) {
     if (to.path === '/login') {
       next({ path: '/' })
+      NProgress.done()
     } else {
-      if (store.getters.roles.length === 0) {
-        store.dispatch('GetInfo').then(res => { // 拉取用户信息
-          next()
+      if (store.getters.path.length === 0) {
+        store.dispatch('GetMenu').then(res => { // 拉取info
+          router.addRoutes(store.getters.path.concat([{ path: '*', redirect: '/404', hidden: true }])) // 动态添加可访问路由表
+          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
         }).catch(() => {
           store.dispatch('FedLogOut').then(() => {
-            Message.error('验证失败,请重新登录')
+            Message.error('Verification failed, please login again')
             next({ path: '/login' })
           })
         })
@@ -26,6 +28,7 @@ router.beforeEach((to, from, next) => {
       }
     }
   } else {
+    console.log('没有登录')
     if (whiteList.indexOf(to.path) !== -1) {
       next()
     } else {

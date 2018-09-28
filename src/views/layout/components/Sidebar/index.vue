@@ -18,7 +18,8 @@ export default {
       'sidebar'
     ]),
     routes() {
-      return this.$router.options.routes
+      console.log('routes', this.$router.options.routes)
+      return this.$store.getters.path
     },
     isCollapse() {
       return !this.sidebar.opened

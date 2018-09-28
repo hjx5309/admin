@@ -1,12 +1,13 @@
-import { login, logout, getInfo } from '@/api/login'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { login, logout } from '@/api/login'
+import { getToken, removeToken, handPath } from '@/utils/auth'
 
 const user = {
   state: {
     token: getToken(),
     name: '',
-    avatar: '',
-    roles: []
+    avatar: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2413045416,3916296131&fm=27&gp=0.jpg',
+    roles: [],
+    path: []
   },
 
   mutations: {
@@ -21,18 +22,25 @@ const user = {
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
+    },
+    SET_PATH: (state, path) => {
+      state.path = path
     }
   },
 
   actions: {
     // 登录
     Login({ commit }, userInfo) {
-      const username = userInfo.username.trim()
+      const username = userInfo.account.trim()
       return new Promise((resolve, reject) => {
         login(username, userInfo.password).then(response => {
           const data = response.data
-          setToken(data.token)
-          commit('SET_TOKEN', data.token)
+          commit('SET_TOKEN', getToken())
+          commit('SET_NAME', data.name)
+          commit('SET_ROLES', data.userType)
+          const userMenus = handPath(data.userMenus)
+          localStorage.setItem('menus', JSON.stringify(data.userMenus))
+          commit('SET_PATH', userMenus)
           resolve()
         }).catch(error => {
           reject(error)
@@ -41,24 +49,32 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({ commit, state }) {
+    GetMenu({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getInfo(state.token).then(response => {
-          const data = response.data
-          commit('SET_ROLES', data.roles)
-          commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
-          resolve(response)
-        }).catch(error => {
-          reject(error)
-        })
+        var menu = localStorage.getItem('menus')
+        if (menu) {
+          const Menus = handPath(JSON.parse(menu))
+          commit('SET_PATH', Menus)
+          resolve()
+        } else {
+          reject(new Error('无路由'))
+        }
+        // getInfo(state.token).then(response => {
+        //   const data = response.data
+        //   commit('SET_ROLES', data.roles)
+        //   commit('SET_NAME', data.name)
+        //   commit('SET_AVATAR', data.avatar)
+        //   resolve(response)
+        // }).catch(error => {
+        //   reject(error)
+        // })
       })
     },
 
     // 登出
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
+        logout().then(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           removeToken()

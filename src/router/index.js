@@ -23,60 +23,88 @@ import Layout from '../views/layout/Layout'
 **/
 export const constantRouterMap = [
   { path: '/login', component: () => import('@/views/login/index'), hidden: true },
-  { path: '/404', component: () => import('@/views/404'), hidden: true },
-
-  {
-    path: '/',
+  { path: '/redict', component: () => import('@/views/redict/index'), hidden: true },
+  { path: '/orderDetail',
     component: Layout,
-    redirect: '/dashboard',
-    name: 'Dashboard',
+    name: 'order',
     hidden: true,
+    redirect: 'noredirect',
+    meta: { title: '订单详情', parent: true, parentName: '返回', path: '/organization/order/index' },
     children: [{
-      path: 'dashboard',
-      component: () => import('@/views/dashboard/index')
+      path: 'index/:id',
+      name: '订单详情',
+      component: () => import('@/views/organization/orderDetail/index'),
+      children: [{
+        path: 'base',
+        name: '基本信息',
+        meta: { title: '基本信息' },
+        component: () => import('@/views/organization/orderDetail/detail/base')
+      }, {
+        path: 'invoice',
+        name: '发票信息',
+        meta: { title: '发票信息' },
+        component: () => import('@/views/organization/orderDetail/detail/invoice')
+      }, {
+        path: 'logistics',
+        name: '运单详情',
+        meta: { title: '运单详情' },
+        component: () => import('@/views/organization/orderDetail/detail/logistics')
+      }]
     }]
   },
+  { path: '/404', component: () => import('@/views/404'), hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
+  // {
+  //   path: '/',
+  //   component: Layout,
+  //   redirect: '/dashboard',
+  //   name: 'Dashboard',
+  //   hidden: true,
+  //   children: [{
+  //     path: 'dashboard',
+  //     component: () => import('@/views/dashboard/index')
+  //   }]
+  // },
 
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
+  // {
+  //   path: '/example',
+  //   component: Layout,
+  //   redirect: '/example/table',
+  //   name: 'Example',
+  //   meta: { title: 'Example', icon: 'example' },
+  //   children: [
+  //     {
+  //       path: 'table',
+  //       name: 'Table',
+  //       component: () => import('@/views/table/index'),
+  //       meta: { title: 'Table', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'tree',
+  //       name: 'Tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: 'Tree', icon: 'tree' }
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
+  // {
+  //   path: '/form',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Form',
+  //       component: () => import('@/views/form/index'),
+  //       meta: { title: 'Form', icon: 'form' }
+  //     }
+  //   ]
+  // },
 
-  { path: '*', redirect: '/404', hidden: true }
 ]
 
 export default new Router({
-  // mode: 'history', //后端支持可开
+  // mode: 'history', // 后端支持可开
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })

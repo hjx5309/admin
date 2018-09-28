@@ -56,3 +56,61 @@ export function formatTime(time, option) {
     return d.getMonth() + 1 + '月' + d.getDate() + '日' + d.getHours() + '时' + d.getMinutes() + '分'
   }
 }
+const isType = function(Type) {
+  return function(obj) {
+    return Object.prototype.toString.call(obj) === '[object ' + Type + ']'
+  }
+}
+/**
+ * 判断是否为数组
+ */
+export function isArray() {
+  return isType('Array')
+}
+/** 判断是否为字符串 */
+export function isString() {
+  return isType('String')
+}
+/** 判断是否为函数 */
+export function isFunction() {
+  return isType('Function')
+}
+/** 判断是否为对象 */
+export function isObject() {
+  return isType('Object')
+}
+/* Layout */
+import Layout from '../views/layout/Layout'
+// 处理路径
+export function handPath(path) {
+  if (isArray(path)) {
+    if (path.length === 0) {
+      return []
+    }
+    var menusList = []
+    for (let i = 0; i < path.length; i++) {
+      var obj = {
+        path: '/',
+        component: Layout,
+        redirect: '/',
+        name: path[i].name,
+        hidden: false,
+        meta: { title: path[i].name, icon: 'example' },
+        children: []
+      }
+      for (let j = 0; j < path[i].children.length; j++) {
+        var pathObj = {
+          path: path[i].children[j].url.split('.')[0],
+          meta: { title: path[i].children[j].name, icon: 'table' },
+          component: () => import(`@/views/` + path[i].children[j].url.split('.')[0])
+        }
+        obj.children.push(pathObj)
+      }
+      menusList.push(obj)
+    }
+    return menusList
+  } else {
+    console.log('不是数组')
+    return []
+  }
+}
